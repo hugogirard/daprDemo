@@ -1,0 +1,43 @@
+@*
+<div class="row">
+    <h1>Please enter your message</h1>
+</div>
+<div class="row">
+    <div class="col-md">
+        <EditForm Model="@Order" OnValidSubmit="@HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label for="name">Name</label>
+                <InputText class="form-control" id="name" @bind-Value="Order.Name" />
+            </div>
+            <br />
+            <div class="form-group">
+                <label for="quantity">Quantity</label>
+                <InputNumber class="form-control" id="quantity" @bind-Value="Order.Quantity" />
+            </div>
+            <br/>
+            <div class="form-group">
+                <label for="price">Price</label>
+                <InputNumber class="form-control" id="price" @bind-Value="Order.Price" />
+            </div>
+            <br/>
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    public Order Order { get; set; } = new();
+
+    private async Task HandleValidSubmit()
+    {       
+        Order.Id = Guid.NewGuid().ToString();
+
+        await _daprClient.PublishEventAsync<Order>("pubsub", "order", Order);
+
+        Order = new();
+    }
+
+} *@

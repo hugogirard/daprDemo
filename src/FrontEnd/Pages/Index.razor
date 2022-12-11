@@ -1,0 +1,25 @@
+﻿@page "/"
+@inject NavigationManager _navigationManager
+
+<div class="row">
+    <div class=col-md-3>
+        <button class="btn btn-primary" @onclick="OnNewOrder">New Order</button>
+        <button class="btn btn-primary" @onclick="PreviousOrder">Previous Order</button>
+    </div>
+    @* <div class=col-md-3>
+        <button class="btn btn-primary">Previous Order</button>
+    </div>     *@
+</div>
+
+@code {
+
+    private void OnNewOrder() 
+    {
+        _navigationManager.NavigateTo("/newOrder");
+    }
+
+    private void PreviousOrder() 
+    {
+        _navigationManager.NavigateTo("/previousOrder");
+    }
+}

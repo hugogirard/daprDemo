@@ -1,0 +1,96 @@
+@page "/newOrder"
+@inject IProductService productService
+@inject IOrderService orderService
+@inject NavigationManager navigationManager
+
+<PageTitle>New Order</PageTitle>
+
+<div class="row">
+    <div class="col-md-5">
+        <input type="text" readonly disabled value="@OrderId"/>
+    </div>
+</div>
+
+@if (Products != null)
+{
+    <div class="row">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Products)
+                {
+                    <tr>                    
+                        <td>@product.Name</td>
+                        <td>
+                            <button class="btn btn-primary" @onclick="() => AddItem(product)">Add</button>
+                        </td>                    
+                    </tr>                
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (_orderItems.Any())
+{
+    <div class="row">
+        <div class="col-md5">
+            <ul class="list-group">
+                  <li class="list-group-item active" aria-current="true">List of ordered items</li>
+                @foreach (var item in _orderItems)
+                {
+                    <li class="list-group-item">@item.Name</li>
+                }    
+            </ul>  
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md3">
+            <button class="btn btn-primary" @onclick="SendOrder">Order</button>
+        </div>
+    </div>
+  
+}
+
+@code {
+
+    public IEnumerable<Product> Products { get; set; }
+
+    private List<Product> _orderItems = new List<Product>();
+
+    private string OrderId { get; } = Guid.NewGuid().ToString();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        Products = await productService.GetProducts();        
+    }
+
+    private void AddItem(Product product)
+    {
+        _orderItems.Add(product);
+    }
+
+    private async Task SendOrder()
+    {
+        var order = new Order
+        {
+            Id = OrderId,
+            Products = _orderItems
+        };
+
+        await orderService.SendOrder(order);
+    }
+
+}
+
+
+
+
+
